@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: shopizer-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: SALESMANAGER
+      MYSQL_USER: shopizer
+      MYSQL_PASSWORD: shopizer_password
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ushopizer", "-pshopizer_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  shopizer:
+    image: ghcr.io/sahilkapoor8989/shopizer:latest
+    container_name: shopizer-app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "30080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: mysql
+      db.jdbcUrl: jdbc:mysql://mysql:3306/SALESMANAGER?autoReconnect=true&serverTimeZone=UTC&useUnicode=true&characterEncoding=UTF-8
+      db.user: shopizer
+      db.password: shopizer_password
+
+  shopizer-admin:
+    image: ghcr.io/sahilkapoor8989/shopizer-admin:latest
+    container_name: shopizer-admin
+    depends_on:
+      - shopizer
+    ports:
+      - "30200:80"
+
+  shopizer-shop:
+    image: ghcr.io/sahilkapoor8989/shopizer-shop-reactjs:latest
+    container_name: shopizer-shop
+    depends_on:
+      - shopizer
+    ports:
+      - "30300:80"
+    environment:
+      APP_BASE_URL: http://localhost:30080
+      APP_API_VERSION: /api/v1/
+      APP_MERCHANT: DEFAULT
