@@ -9,6 +9,10 @@ if ! colima status &>/dev/null; then
   colima start
 fi
 
+# Remove all existing containers
+echo "Removing existing containers..."
+docker rm -f shopizer-app shopizer-admin shopizer-shop shopizer-mysql 2>/dev/null || true
+
 # Login to GHCR
 echo "Logging in to GHCR..."
 echo "Enter your GitHub Personal Access Token (with read:packages scope):"
@@ -16,7 +20,7 @@ read -s GHCR_TOKEN
 echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${GHCR_USER}" --password-stdin
 
 # Pull latest images
-echo "Pulling images from GHCR..."
+echo "Pulling latest images from GHCR..."
 docker pull ghcr.io/${GHCR_USER}/shopizer:latest
 docker pull ghcr.io/${GHCR_USER}/shopizer-admin:latest
 docker pull ghcr.io/${GHCR_USER}/shopizer-shop-reactjs:latest
