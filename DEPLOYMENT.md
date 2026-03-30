@@ -10,12 +10,13 @@
     │                   │  │  shopizer-shop   │  │  shopizer-admin  │  │
     ├── :30300 ─────────┼─▶│  React (nginx)  │  │  Angular (nginx) │  │
     │                   │  └────────┬────────┘  └────────┬────────┘  │
-    └── :30200 ─────────┼───────────┘                    │           │
-                        │           └────────────────────┘           │
-                        │                      │ :30080               │
+    └── :30200 ─────────┼───────────────────────────────┘            │
+                        │                      │                      │
+                        │               :30080 │                      │
                         │             ┌────────▼────────┐            │
                         │             │  shopizer-app   │            │
                         │             │  Spring Boot    │            │
+                        │             │  Swagger: /swagger-ui.html   │
                         │             └────────┬────────┘            │
                         │                      │ :3306                │
                         │             ┌────────▼────────┐            │
@@ -33,6 +34,13 @@
 | shopizer-admin | `ghcr.io/sahilkapoor8989/shopizer-admin:latest` | http://localhost:30200 |
 | shopizer-shop | `ghcr.io/sahilkapoor8989/shopizer-shop-reactjs:latest` | http://localhost:30300 |
 | shopizer-mysql | `mysql:8.0` | localhost:3306 |
+
+## Features Implemented
+
+### Announcement Banner
+- Admin can set a store-wide announcement message from **Store Management → Store Details**
+- Stored in `MERCHANT_STORE.ANNOUNCEMENT` column in MySQL
+- Exposed via existing `GET /api/v1/store/{code}` and `PUT /api/v1/private/store/{code}` endpoints
 
 ## CI/CD Strategy
 
